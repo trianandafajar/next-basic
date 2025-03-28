@@ -7,29 +7,27 @@ interface Post {
   title: string;
   body: string;
 }
+
 interface BlogProps {
   dataBlog: Post[];
 }
-export default function Blog(props: BlogProps) {
-  const { dataBlog } = props;
-  return (
-    <Layout pageTitle="Blog Page">
-      {dataBlog.map((blog) => (
-        <div key={blog.id} className={styles.card}>
-          <h3>{blog.title}</h3>
-          <p>{blog.body}</p>
-        </div>
-      ))}
-    </Layout>
-  );
-}
 
-export async function getServerSideProps() {
+const Blog: React.FC<BlogProps> = ({ dataBlog }) => (
+  <Layout pageTitle="Blog Page">
+    {dataBlog.map(({ id, title, body }) => (
+      <div key={id} className={styles.card}>
+        <h3>{title}</h3>
+        <p>{body}</p>
+      </div>
+    ))}
+  </Layout>
+);
+
+export const getServerSideProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const dataBlog = await res.json();
-  return {
-    props: {
-      dataBlog,
-    },
-  };
-}
+  const dataBlog: Post[] = await res.json();
+
+  return { props: { dataBlog } };
+};
+
+export default Blog;
