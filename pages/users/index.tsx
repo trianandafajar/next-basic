@@ -16,9 +16,9 @@ interface UsersProps {
 const Users: React.FC<UsersProps> = ({ dataUsers }) => {
   const router = useRouter();
 
-  const handleClick = useCallback(
-    (id: number) => {
-      router.push(`/users/${id}`);
+  const handleUserClick = useCallback(
+    (userId: number) => {
+      router.push(`/users/${userId}`);
     },
     [router]
   );
@@ -26,14 +26,14 @@ const Users: React.FC<UsersProps> = ({ dataUsers }) => {
   return (
     <Layout pageTitle="Users Page">
       <div className={styles.userContainer}>
-        {dataUsers.map((user) => (
+        {dataUsers.map(({ id, name, email }) => (
           <div
-            key={user.id}
-            onClick={() => handleClick(user.id)}
+            key={id}
             className={styles.card}
+            onClick={() => handleUserClick(id)}
           >
-            <p>{user.name}</p>
-            <p>{user.email}</p>
+            <p>{name}</p>
+            <p>{email}</p>
           </div>
         ))}
       </div>
@@ -41,15 +41,13 @@ const Users: React.FC<UsersProps> = ({ dataUsers }) => {
   );
 };
 
-export async function getStaticProps() {
-  const res = await fetch("https://jsonplaceholder.typicode.com/users");
-  const dataUsers: User[] = await res.json();
+export const getStaticProps = async () => {
+  const response = await fetch("https://jsonplaceholder.typicode.com/users");
+  const dataUsers: User[] = await response.json();
 
   return {
-    props: {
-      dataUsers,
-    },
+    props: { dataUsers },
   };
-}
+};
 
 export default Users;
